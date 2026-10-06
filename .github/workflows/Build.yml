@@ -1,0 +1,55 @@
+name: Build APK
+on: workflow_dispatch
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Create Android project
+        run: |
+          flutter create --project-name daily_photo --platforms=android tmp_app
+          cp -r tmp_app/android android
+          mkdir -p lib
+          if [ -f main.dart.txt ]; then cp main.dart.txt lib/main.dart; fi
+          if [ -f main.dart ]; then cp main.dart lib/main.dart; fi
+          if [ -f pubspec.yaml.txt ]; then cp pubspec.yaml.txt pubspec.yaml; fi
+      - name: Patch manifest and gradle
+        run: |
+          python3 - <<'EOF'
+          import glob
+          p = 'android/app/src/main/AndroidManifest.xml'
+          s = open(p).read()
+          perms = '<uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>\n<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>\n<application'
+          recv = '''<receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver"/>
+          <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
+          <intent-filter>
+          <action android:name="android.intent.action.BOOT_COMPLETED"/>
+          <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+          </intent-filter>
+          </receiver>
+          </application>'''
+          s = s.replace('<application', perms, 1).replace('</application>', recv, 1)
+          open(p, 'w').write(s)
+          g = glob.glob('android/app/build.gradle*')[0]
+          t = open(g).read()
+          if g.endswith('.kts'):
+              t = t.replace('compileOptions {', 'compileOptions {\n        isCoreLibraryDesugaringEnabled = true', 1)
+              t += '\ndependencies {\n    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")\n}\n'
+          else:
+              t = t.replace('compileOptions {', 'compileOptions {\n        coreLibraryDesugaringEnabled true', 1)
+              t += '\ndependencies {\n    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.1.4"\n}\n'
+          open(g, 'w').write(t)
+          EOF
+      - run: flutter pub get
+      - run: flutter build apk --release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: daily-photo-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
