@@ -24,7 +24,7 @@ final notifications = FlutterLocalNotificationsPlugin();
 Future<void> initNotifications() async {
   tz.initializeTimeZones();
   final name = await FlutterTimezone.getLocalTimezone();
-  tz.setLocation(tz.getLocation(name));
+  tz.setLocalLocation(tz.getLocation(name));
   tz.setLocalLocation(tz.getLocation(name));
   await notifications.initialize(const InitializationSettings(
     android: AndroidInitializationSettings('@mipmap/ic_launcher'),
