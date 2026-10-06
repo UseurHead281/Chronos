@@ -13,6 +13,4 @@ Android-приложение на Flutter: каждый день в выбран
 
 ## Сборка
 Приложение собирается через GitHub Actions:
-1. Вкладка **Actions** → **Build APK** → **Run workflow**
-2. Когда сборка завершится, скачайте `daily-photo-apk` из раздела **Artifacts**
-3. Распакуйте архив и установите `app-release.apk`
+1. Откройте `app-release.apk` из releases
