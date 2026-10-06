@@ -474,7 +474,45 @@ class _GalleryPageState extends State<GalleryPage> {
     return Column(children: [
       Padding(padding: const EdgeInsets.fromLTRB(16, 12, 16, 4), child: Row(children: [Expanded(child: Text('Мои моменты', style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w800))), IconButton(onPressed: () => setState(() => onlyFavorites = !onlyFavorites), icon: Icon(onlyFavorites ? Icons.favorite : Icons.favorite_border)), PopupMenuButton<bool>(onSelected: (v) async { setState(() => store.compactGallery = v); await store.set((p) async { await p.setBool('compact', v); }); }, itemBuilder: (_) => const [PopupMenuItem(value: false, child: Text('Крупные плитки')), PopupMenuItem(value: true, child: Text('Компактная сетка'))])])),
       Padding(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), child: TextField(onChanged: (v) => setState(() => query = v), decoration: InputDecoration(prefixIcon: const Icon(Icons.search_rounded), hintText: 'Поиск по датам и подписям', filled: true, border: OutlineInputBorder(borderRadius: BorderRadius.circular(18), borderSide: BorderSide.none), suffixIcon: query.isEmpty ? null : IconButton(onPressed: () => setState(() => query = ''), icon: const Icon(Icons.close_rounded))))),
-      Expanded(child: list.isEmpty ? Center(child: Padding(padding: const EdgeInsets.all(32), child: Column(mainAxisSize: MainAxisSize.min, children: [Icon(store.photos.isEmpty ? Icons.photo_camera_back_rounded : Icons.search_off_rounded, size: 52, color: Theme.of(context).colorScheme.primary), const SizedBox(height: 14), Text(store.photos.isEmpty ? 'Пока здесь пусто' : 'Ничего не найдено', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)), const SizedBox(height: 6), Text(store.photos.isEmpty ? 'Сделай первое фото дня — оно появится здесь.' : 'Попробуй изменить запрос или снять фильтр.', textAlign: TextAlign.center, style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant))])) : GridView.builder(padding: const EdgeInsets.all(12), gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: store.compactGallery ? 4 : 3, mainAxisSpacing: 8, crossAxisSpacing: 8), itemCount: list.length, itemBuilder: (_, i) => _tile(context, list[i]))),
+      Expanded(
+        child: list.isEmpty
+            ? Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(32),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        store.photos.isEmpty ? Icons.photo_camera_back_rounded : Icons.search_off_rounded,
+                        size: 52,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      const SizedBox(height: 14),
+                      Text(
+                        store.photos.isEmpty ? 'Пока здесь пусто' : 'Ничего не найдено',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        store.photos.isEmpty ? 'Сделай первое фото дня — оно появится здесь.' : 'Попробуй изменить запрос или снять фильтр.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            : GridView.builder(
+                padding: const EdgeInsets.all(12),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: store.compactGallery ? 4 : 3,
+                  mainAxisSpacing: 8,
+                  crossAxisSpacing: 8,
+                ),
+                itemCount: list.length,
+                itemBuilder: (_, i) => _tile(context, list[i]),
+              ),
+      ),
     ]);
   });
 
@@ -551,7 +589,26 @@ class SettingsPage extends StatelessWidget {
     SwitchListTile(secondary: const Icon(Icons.cameraswitch_outlined), title: const Text('Фронтальная камера'), value: store.frontCamera, onChanged: (v) => store.set((p) async { store.frontCamera = v; await p.setBool('front', v); })),
     SwitchListTile(secondary: const Icon(Icons.local_fire_department_outlined), title: const Text('Показывать серию'), value: store.showStreak, onChanged: (v) => store.set((p) async { store.showStreak = v; await p.setBool('showStreak', v); })),
     const _SectionTitle('Оформление'),
-    ListTile(leading: const Icon(Icons.brightness_6_outlined), title: const Text('Тема'), subtitle: Padding(padding: const EdgeInsets.only(top: 8), child: SegmentedButton<ThemeMode>(showSelectedIcon: false, segments: const [ButtonSegment(value: ThemeMode.system, label: Text('Авто')), ButtonSegment(value: ThemeMode.light, label: Text('Светлая')), ButtonSegment(value: ThemeMode.dark, label: Text('Тёмная'))], selected: {store.themeMode}, onSelectionChanged: (s) => store.set((p) async { store.themeMode = s.first; await p.setInt('theme', s.first.index); }))),
+    ListTile(
+      leading: const Icon(Icons.brightness_6_outlined),
+      title: const Text('Тема'),
+      subtitle: Padding(
+        padding: const EdgeInsets.only(top: 8),
+        child: SegmentedButton<ThemeMode>(
+          showSelectedIcon: false,
+          segments: const [
+            ButtonSegment(value: ThemeMode.system, label: Text('Авто')),
+            ButtonSegment(value: ThemeMode.light, label: Text('Светлая')),
+            ButtonSegment(value: ThemeMode.dark, label: Text('Тёмная')),
+          ],
+          selected: {store.themeMode},
+          onSelectionChanged: (s) => store.set((p) async {
+            store.themeMode = s.first;
+            await p.setInt('theme', s.first.index);
+          }),
+        ),
+      ),
+    ),
     ListTile(leading: const Icon(Icons.palette_outlined), title: const Text('Цвет Chronos'), subtitle: Padding(padding: const EdgeInsets.only(top: 12), child: Wrap(spacing: 12, runSpacing: 10, children: [for (var i = 0; i < seeds.length; i++) GestureDetector(onTap: () => store.set((p) async { store.seedIndex = i; await p.setInt('seed', i); }), child: CircleAvatar(backgroundColor: seeds[i], child: store.seedIndex == i ? const Icon(Icons.check, color: Colors.white) : null))]))),
     const _SectionTitle('О приложении'),
     const ListTile(leading: Icon(Icons.hourglass_bottom_rounded), title: Text('Chronos'), subtitle: Text('Один день — один момент.\nВерсия 0.25 • локальные воспоминания')),
