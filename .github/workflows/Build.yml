@@ -14,7 +14,7 @@ jobs:
           channel: stable
       - name: Create Android project
         run: |
-          flutter create --project-name daily_photo --platforms=android tmp_app
+          flutter create --project-name Chronos --platforms=android tmp_app
           cp -r tmp_app/android android
           mkdir -p lib
           if [ -f main.dart.txt ]; then cp main.dart.txt lib/main.dart; fi
