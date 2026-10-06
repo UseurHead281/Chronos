@@ -1,7 +1,7 @@
 name: chronos
 description: Chronos — ежедневное фото и воспоминания
 publish_to: none
-version: 1.0.0+1
+version: 0.25.0+25
 
 environment:
   sdk: ">=3.4.0 <4.0.0"
@@ -16,5 +16,12 @@ dependencies:
   path_provider: ^2.1.4
   shared_preferences: ^2.3.2
 
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
 flutter:
   uses-material-design: true
+  assets:
+    - assets/launcher/
