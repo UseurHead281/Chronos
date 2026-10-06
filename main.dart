@@ -612,7 +612,7 @@ class SettingsPage extends StatelessWidget {
     ListTile(leading: const Icon(Icons.palette_outlined), title: const Text('Цвет Chronos'), subtitle: Padding(padding: const EdgeInsets.only(top: 12), child: Wrap(spacing: 12, runSpacing: 10, children: [for (var i = 0; i < seeds.length; i++) GestureDetector(onTap: () => store.set((p) async { store.seedIndex = i; await p.setInt('seed', i); }), child: CircleAvatar(backgroundColor: seeds[i], child: store.seedIndex == i ? const Icon(Icons.check, color: Colors.white) : null))]))),
     const _SectionTitle('О приложении'),
     const ListTile(leading: Icon(Icons.hourglass_bottom_rounded), title: Text('Chronos'), subtitle: Text('Один день — один момент.\nВерсия 0.25 • локальные воспоминания')),
-  ])));
+  ]));
 }
 
 class _SectionTitle extends StatelessWidget {
