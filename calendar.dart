@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../store.dart';
 import '../widgets.dart';
 import 'viewer.dart';
+import '../animations.dart';
 
 const _basePage = 1200;
 const _weekdays = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'];
@@ -150,7 +151,7 @@ class _MonthGrid extends StatelessWidget {
         final fg = isSel
             ? cs.onPrimary
             : (future ? cs.onSurface.withValues(alpha: .38) : cs.onSurface);
-        return TweenAnimationBuilder<double>(
+        return FadeSlideIn(child: TweenAnimationBuilder<double>(
           tween: Tween(begin: 0, end: 1),
           duration: ms(180 + (i * 8).clamp(0, 240)),
           curve: Curves.easeOut,
