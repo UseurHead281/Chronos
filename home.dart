@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import '../store.dart';
 import '../widgets.dart';
+import '../animations.dart';
 import 'calendar.dart';
 import 'gallery.dart';
 import 'settings.dart';
@@ -46,7 +47,7 @@ class _HomeState extends State<Home> {
                 child: child,
               ),
             ),
-            child: _page(),
+            child: FadeSlideIn(key: ValueKey('page-$tab'), child: _page()),
           ),
         ),
         bottomNavigationBar: NavigationBar(
@@ -77,6 +78,7 @@ class TodayPage extends StatelessWidget {
           final cs = Theme.of(context).colorScheme;
           final now = DateTime.now();
           return ListView(
+            physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
             children: [
               Row(children: [
@@ -98,14 +100,14 @@ class TodayPage extends StatelessWidget {
                 ),
               ]),
               const SizedBox(height: 18),
-              if (store.showStreak) _streakCard(context),
+              if (store.showStreak) FadeSlideIn(delay: 20, child: _streakCard(context)),
               const SizedBox(height: 14),
-              _photoCard(context, photo),
+              FadeSlideIn(delay: 60, child: _photoCard(context, photo)),
               const SizedBox(height: 14),
-              if (photo != null) _noteCard(context, photo),
+              if (photo != null) FadeSlideIn(delay: 90, child: _noteCard(context, photo)),
               if (photo != null && store.voiceEnabled) ...[
                 const SizedBox(height: 14),
-                VoiceNoteCard(day: dayOnly(now)),
+                FadeSlideIn(delay: 120, child: VoiceNoteCard(day: dayOnly(now))),
               ],
               const SizedBox(height: 14),
               FilledButton.icon(

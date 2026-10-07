@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../store.dart';
 import '../widgets.dart';
 import 'viewer.dart';
+import '../animations.dart';
 
 class GalleryPage extends StatefulWidget {
   const GalleryPage({super.key});
@@ -91,7 +92,7 @@ class _GalleryPageState extends State<GalleryPage> {
                         crossAxisSpacing: 8,
                       ),
                       itemCount: list.length,
-                      itemBuilder: (_, i) => _tile(context, list[i]),
+                      itemBuilder: (_, i) => FadeSlideIn(delay: (i % 6) * 25, child: _tile(context, list[i])),
                     ),
             ),
           ]);
